@@ -1,1 +1,0 @@
-const prac:string = "test";
