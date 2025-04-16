@@ -5,7 +5,8 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
-    "esModuleInterop": true,
+
+    "esModuleInterop": true
   },
   "ts-node": {
     "esm": true
