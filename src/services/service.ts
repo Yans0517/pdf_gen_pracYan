@@ -14,4 +14,9 @@ export class AppService {
     payloadDB.push(payload);
     return payload;
   }
+
+  public static async checkStatusSDID(sdid: string) {
+    const data = payloadDB.find((item) => item.sdid === sdid);
+    return data;
+  }
 }

@@ -35,5 +35,5 @@ const logger = new Logger();
 
 router.get("/ack", AppController.getData);
 router.post("/ack", AppController.addData);
-
+router.get("/ack/status/:sdid", AppController.checkStatusSDID);
 export const AppRouter = router;

@@ -18,4 +18,17 @@ export class AppController {
       data: newData,
     });
   };
+
+  public static checkStatusSDID = async (req: Request, res: Response) => {
+    const { sdid } = req.params;
+    const data = await AppService.checkStatusSDID(sdid);
+    if (data) {
+      res.status(200).json({
+        message: "Data found",
+        data: data,
+      });
+    } else {
+      res.status(404).json({ message: "Data not found" });
+    }
+  };
 }
