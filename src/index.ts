@@ -1,10 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
-import { Logger } from "./middleware/index.js";
 dotenv.config();
 import cors from "cors";
+import { Logger } from "./utils/index.js";
 import { AppRouter } from "./routes/index.js";
 const app = express();
+
 const logger = new Logger();
 
 // app.use(cors());

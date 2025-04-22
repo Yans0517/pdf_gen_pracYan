@@ -1,12 +1,12 @@
 import express, { Request, RequestHandler, Response } from "express";
 import { AuthMiddleware } from "../middleware/middleware.js";
 import { AppController } from "../controllers/index.js";
-import { Logger } from "../middleware/index.js";
 import { TLSSocket } from "tls";
+import { loggers } from "winston";
+import { Logger } from "../utils/index.js";
+const logger = new Logger();
 
 const router = express.Router();
-
-const logger = new Logger();
 
 // router
 //   .route("/ack")
@@ -32,7 +32,7 @@ const logger = new Logger();
 //       }
 //     }
 //   );
-
+router.get("/", AppController.testEndpoit);
 router.get("/ack", AppController.getData);
 router.post("/ack", AppController.addData);
 router.get("/ack/status/:sdid", AppController.checkStatusSDID);
