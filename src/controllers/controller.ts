@@ -55,7 +55,6 @@ export class AppController {
   public static checkStatusSDID = async (req: Request, res: Response) => {
     try {
       const { sdid } = req.params;
-
       const data = await AppService.checkStatusSDID(sdid);
       if (data) {
         res.status(200).json({
@@ -71,7 +70,6 @@ export class AppController {
       });
       logger.error("❌ Error checking status by SDID");
     }
-
     logger.info("✔️ Executed CHECK STATUS SDID controller");
   };
 }

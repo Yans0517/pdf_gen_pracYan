@@ -19,12 +19,20 @@ export class AppService {
 
   public static async createData(payload: AckPayloadType) {
     try {
+      if (payloadDB.find((item) => item.sdid === payload.sdid)) {
+        logger.warn("Duplicate data found, not creating new entry.");
+        throw new Error("Duplicate data found.");
+      }
+      if (!payload.sdid || !payload.sid || !payload.acknowledge) {
+        logger.warn("Missing required fields in payload.");
+        throw new Error("Missing required fields in payload.");
+      }
       payloadDB.push(payload);
       logger.info("✅ Data created successfully");
       return payload;
     } catch (error) {
-      logger.error("❌ Error creating data:", error);
-      throw new Error("Failed to create data.");
+      logger.error("❌ Error creating data");
+      throw new Error(error.message);
     }
   }
 
