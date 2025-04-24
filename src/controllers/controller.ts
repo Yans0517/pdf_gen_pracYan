@@ -4,7 +4,7 @@ import { Logger } from "../utils/index.js";
 
 const logger = new Logger();
 export class AppController {
-  public AppService: AppService;
+  public AppService!: AppService;
   public static async browseAll(req: any) {
     const data = await AppService.browseAll();
     return data;
@@ -16,9 +16,10 @@ export class AppController {
     try {
       res.json({ message: "TEST ENDPOINT" });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "An error occurred", error: error.message });
+      res.status(500).json({
+        message: "An error occurred",
+        error: (error as Error).message,
+      });
     } finally {
       logger.info("✔️ Executed TEST ENDPOINT controller");
     }
@@ -30,7 +31,10 @@ export class AppController {
     } catch (error) {
       res
         .status(500)
-        .json({ message: "An error occurred", error: error.message });
+        .json({
+          message: "An error occurred",
+          error: (error as Error).message,
+        });
     } finally {
       logger.info("✔️ Executed GET DATA controller");
     }
@@ -44,9 +48,10 @@ export class AppController {
         data: newData,
       });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "An error occurred", error: error.message });
+      res.status(500).json({
+        message: "An error occurred",
+        error: (error as Error).message,
+      });
     } finally {
       logger.info("✔️ Executed CREATE DATA controller");
     }
