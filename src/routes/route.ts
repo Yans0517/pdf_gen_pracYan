@@ -35,5 +35,12 @@ const router = express.Router();
 router.get("/", AppController.testEndpoit);
 router.get("/ack", AppController.getData);
 router.post("/ack", AppController.addData);
-router.get("/ack/status/:sdid", AppController.checkStatusSDID);
+router.get("/ack/status/:sdid/", AppController.checkStatusSDID);
+router.get("/error", (req, res, next) => {
+  next(new Error("Test error")); // This will be caught by the error handler
+});
+
+// router.all("/ack/*", (req, res) => {
+//   res.status(404).json({ message: "Route not found" });
+// });
 export const AppRouter = router;

@@ -1,6 +1,7 @@
 import { AppService } from "../services/index.js";
 import { Request, Response } from "express";
 import { Logger } from "../utils/index.js";
+
 const logger = new Logger();
 export class AppController {
   public AppService: AppService;
@@ -8,6 +9,9 @@ export class AppController {
     const data = await AppService.browseAll();
     return data;
   }
+  public static defaultRoute = async (req: Request, res: Response) => {
+    res.sendStatus(403);
+  };
   public static testEndpoit = async (req: Request, res: Response) => {
     try {
       res.json({ message: "TEST ENDPOINT" });
@@ -51,6 +55,7 @@ export class AppController {
   public static checkStatusSDID = async (req: Request, res: Response) => {
     try {
       const { sdid } = req.params;
+
       const data = await AppService.checkStatusSDID(sdid);
       if (data) {
         res.status(200).json({
@@ -61,11 +66,12 @@ export class AppController {
         res.status(404).json({ message: "Data not found" });
       }
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "An error occurred", error: error.message });
-    } finally {
-      logger.info("✔️ Executed CHECK STATUS SDID controller");
+      res.status(500).json({
+        message: "An error occurred",
+      });
+      logger.error("❌ Error checking status by SDID");
     }
+
+    logger.info("✔️ Executed CHECK STATUS SDID controller");
   };
 }

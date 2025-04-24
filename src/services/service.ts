@@ -37,7 +37,7 @@ export class AppService {
       }
       return data;
     } catch (error) {
-      logger.error("❌ Error checking status by SDID:", error);
+      logger.error("❌ Error checking status by SDID:");
       throw new Error("Failed to check status by SDID.");
     }
   }
