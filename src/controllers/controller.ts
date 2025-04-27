@@ -1,40 +1,25 @@
 import { AppService } from "../services/index.js";
 import { Request, Response } from "express";
 import { Logger } from "../utils/index.js";
+import { loggers } from "winston";
 
 const logger = new Logger();
 export class AppController {
   public AppService!: AppService;
-  public static async browseAll(req: any) {
-    const data = await AppService.browseAll();
-    return data;
-  }
+
   public static defaultRoute = async (req: Request, res: Response) => {
     res.sendStatus(403);
   };
-  public static testEndpoit = async (req: Request, res: Response) => {
-    try {
-      res.json({ message: "TEST ENDPOINT" });
-    } catch (error) {
-      res.status(500).json({
-        message: "An error occurred",
-        error: (error as Error).message,
-      });
-    } finally {
-      logger.info("✔️ Executed TEST ENDPOINT controller");
-    }
-  };
+
   public static getData = async (req: Request, res: Response) => {
     try {
       const data = await AppService.getAllData();
       res.json(data);
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          message: "An error occurred",
-          error: (error as Error).message,
-        });
+      res.status(500).json({
+        message: "An error occurred",
+        error: (error as Error).message,
+      });
     } finally {
       logger.info("✔️ Executed GET DATA controller");
     }
@@ -64,7 +49,7 @@ export class AppController {
       if (data) {
         res.status(200).json({
           message: "Data found",
-          data: data,
+          active: data,
         });
       } else {
         res.status(404).json({ message: "Data not found" });
@@ -76,5 +61,24 @@ export class AppController {
       logger.error("❌ Error checking status by SDID");
     }
     logger.info("✔️ Executed CHECK STATUS SDID controller");
+  };
+
+  //TODO : Token generator using JWT
+  public static generateToken = async (req: Request, res: Response) => {
+    try {
+      const token = await AppService.generateToken();
+      res.status(200).json({
+        message: "Token generated successfully",
+        token: token,
+      });
+      logger.silly(`TOKEN: ${token}`);
+    } catch (error) {
+      res.status(500).json({
+        message: "An error occurred",
+        error: (error as Error).message,
+      });
+    } finally {
+      logger.info("✔️ Executed GENERATE TOKEN controller");
+    }
   };
 }

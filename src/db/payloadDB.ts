@@ -2,18 +2,17 @@ import { AckPayloadType } from "../types/payload";
 
 export const payloadDB: AckPayloadType[] = [
   {
-    sdid: "SDID1",
-    sid: "sid 1",
-    acknowledge: "Ack1",
+    _id: "Test_id",
+    sdid: "Test_true",
+    sid: "Test_sid",
+    acknowledge: "Test_ACk",
+    status: true,
   },
   {
-    sdid: "SDID2",
-    sid: "sid 2",
-    acknowledge: "Ack2",
-  },
-  {
-    sdid: "SDID3",
-    sid: "sid 3",
-    acknowledge: "Ack3",
+    _id: "Test_id_false",
+    sdid: "Test_false",
+    sid: "Test_sid_false",
+    acknowledge: "Test_ACk_false",
+    status: false,
   },
 ];
