@@ -26,9 +26,10 @@ export class AppService {
         sdid: "Test_sdid",
         sid: "Test_sid",
         acknowledge: "Test_ACk",
+        status: true,
       };
       const token = jwt.sign(payload, process.env.JWT_SECRET || " ", {
-        expiresIn: "1h",
+        expiresIn: "1h", // Token expiration time
       });
       logger.info("✅ Token generated successfully");
       return token;
@@ -72,25 +73,21 @@ export class AppService {
       return newPayload;
     } catch (error) {
       logger.error("❌ Error creating data");
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw new Error("An unknown error occurred.");
+
+      throw new Error("Error occurred when creating data.");
     }
   }
 
   public static async checkStatusSDID(sdid: string) {
     try {
       const data = payloadDB.find((item) => item.sdid === sdid);
-      if (!data) {
-        logger.warn(`No data found for SDID: ${sdid}`);
-        throw new Error(`No data found for SDID: ${sdid}`);
+      if (data) {
+        return { isActive: data.status };
       }
       logger.info(`Data found for SDID: ${sdid}`);
-      return { status: data.status };
     } catch (error) {
-      logger.error("❌ Error checking status by SID:", error);
-      throw new Error("Failed to check status by SID.");
+      logger.error("❌ Error checking status by SDID:", error);
+      throw new Error(`No data found for SDID: ${sdid}`);
     }
   }
 }

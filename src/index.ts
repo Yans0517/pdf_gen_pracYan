@@ -13,11 +13,12 @@ const logger = new Logger();
 // app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded());
+
 const port = process.env.PORT || 3000;
 
 app.use(AppRouter);
-
 app.use(errorCatchAllHandler);
+
 app.listen(port, () => {
   logger.info(`Server running at http://localhost:${port}`);
   // console.log(`Server running at http://localhost:${port}`);

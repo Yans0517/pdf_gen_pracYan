@@ -3,12 +3,14 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { AppRouter } from "../routes/index";
 import { AppService } from "../services/index.js";
+import { errorCatchAllHandler } from "../middleware/middleware.js";
 
 jest.mock("../services/index.js");
 
 const app = express();
 app.use(express.json());
 app.use(AppRouter);
+app.use(errorCatchAllHandler); // Add the error handler middleware
 
 const mockToken = jwt.sign(
   { id: "test_id" },
@@ -44,7 +46,14 @@ describe("AppController", () => {
         .set("Authorization", `Bearer ${mockToken}`);
 
       expect(response.status).toBe(500);
-      expect(response.body.message).toBe("An error occurred");
+      expect(response.body.error).toEqual({
+        code: "Error",
+        message: "Error",
+        innerError: expect.objectContaining({
+          requestId: expect.any(String),
+          date: expect.any(String),
+        }),
+      });
     });
   });
 
@@ -74,46 +83,71 @@ describe("AppController", () => {
         .set("Authorization", `Bearer ${mockToken}`);
 
       expect(response.status).toBe(500);
-      expect(response.body.message).toBe("An error occurred");
+      expect(response.body.error).toEqual({
+        code: "Error",
+        message: "Internal error",
+        innerError: expect.objectContaining({
+          requestId: expect.any(String),
+          date: expect.any(String),
+        }),
+      });
     });
   });
 
-  // describe("GET /ack/status/:sdid", () => {
-  //   it("should return status data by SDID", async () => {
-  //     const mockData = { sdid: "SDID1", sid: "sid 1", acknowledge: "Ack1" };
-  //     AppService.checkStatusSDID = jest.fn().mockResolvedValue(mockData);
+  describe("GET /ack/status/:sdid", () => {
+    it("should return the status of the SDID", async () => {
+      const mockData = {
+        sdid: "Test_true",
+        sid: "Test_sid",
+        acknowledge: "Test_ACk",
+        status: true,
+      };
+      AppService.checkStatusSDID = jest
+        .fn()
+        .mockResolvedValue({ isActive: true });
 
-  //     const response = await request(app)
-  //       .get(`/ack/status/SDID1`)
-  //       .set("Authorization", `Bearer ${mockToken}`);
+      const response = await request(app)
+        .get(`/ack/status/Test_true`)
+        .set("Authorization", `Bearer ${mockToken}`);
 
-  //     expect(response.status).toBe(200);
-  //     expect(response.body.message).toBe("Data found");
-  //     expect(response.body.data).toEqual(mockData);
-  //   });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        message: "Data found",
+        status: {
+          isActive: true,
+        },
+      });
+    });
 
-  //   it("should return 404 if data is not found", async () => {
-  //     AppService.checkStatusSDID = jest.fn().mockResolvedValue(null);
+    it("should return 404 if data is not found", async () => {
+      AppService.checkStatusSDID = jest.fn().mockResolvedValue(null);
 
-  //     const response = await request(app)
-  //       .get("/ack/status/123")
-  //       .set("Authorization", `Bearer ${mockToken}`);
+      const response = await request(app)
+        .get("/ack/status/123")
+        .set("Authorization", `Bearer ${mockToken}`);
 
-  //     expect(response.status).toBe(404);
-  //     expect(response.body.message).toBe("Data not found");
-  //   });
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe("Data not found");
+    });
 
-  //   it("should return 500 if an error occurs", async () => {
-  //     AppService.checkStatusSDID = jest
-  //       .fn()
-  //       .mockRejectedValue(new Error("Internal error"));
+    it("should return 500 if an error occurs", async () => {
+      AppService.checkStatusSDID = jest
+        .fn()
+        .mockRejectedValue(new Error("Internal error"));
 
-  //     const response = await request(app)
-  //       .get("/ack/status/123")
-  //       .set("Authorization", `Bearer ${mockToken}`);
+      const response = await request(app)
+        .get("/ack/status/123")
+        .set("Authorization", `Bearer ${mockToken}`);
 
-  //     expect(response.status).toBe(500);
-  //     expect(response.body.message).toBe("An error occurred");
-  //   });
-  // });
+      expect(response.status).toBe(500);
+      expect(response.body.error).toEqual({
+        code: "Error",
+        message: "Internal error",
+        innerError: expect.objectContaining({
+          requestId: expect.any(String),
+          date: expect.any(String),
+        }),
+      });
+    });
+  });
 });

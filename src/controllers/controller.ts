@@ -1,5 +1,5 @@
 import { AppService } from "../services/index.js";
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { Logger } from "../utils/index.js";
 import { loggers } from "winston";
 
@@ -11,21 +11,30 @@ export class AppController {
     res.sendStatus(403);
   };
 
-  public static getData = async (req: Request, res: Response) => {
+  public static getData = async (
+    req: Request,
+    res: Response,
+    next: Function
+  ) => {
     try {
       const data = await AppService.getAllData();
       res.json(data);
     } catch (error) {
-      res.status(500).json({
-        message: "An error occurred",
-        error: (error as Error).message,
-      });
+      // res.status(500).json({
+      //   message: "An error occurred",
+      //   error: (error as Error).message,
+      // });
+      next(error); // Pass the error to the middleware
     } finally {
       logger.info("✔️ Executed GET DATA controller");
     }
   };
 
-  public static addData = async (req: Request, res: Response) => {
+  public static addData = async (
+    req: Request,
+    res: Response,
+    next: Function
+  ) => {
     try {
       const newData = await AppService.createData(req.body);
       res.status(201).json({
@@ -33,38 +42,44 @@ export class AppController {
         data: newData,
       });
     } catch (error) {
-      res.status(500).json({
-        message: "An error occurred",
-        error: (error as Error).message,
-      });
+      next(error); // Pass the error to the middleware
     } finally {
       logger.info("✔️ Executed CREATE DATA controller");
     }
   };
 
-  public static checkStatusSDID = async (req: Request, res: Response) => {
+  public static checkStatusSDID = async (
+    req: Request,
+    res: Response,
+    next: Function
+  ) => {
     try {
       const { sdid } = req.params;
       const data = await AppService.checkStatusSDID(sdid);
       if (data) {
         res.status(200).json({
           message: "Data found",
-          active: data,
+          status: data,
         });
       } else {
         res.status(404).json({ message: "Data not found" });
       }
     } catch (error) {
-      res.status(500).json({
-        message: "An error occurred",
-      });
+      // res.status(500).json({
+      //   message: "An error occurred",
+      // });
+      next(error); // Pass the error to the middleware
       logger.error("❌ Error checking status by SDID");
     }
     logger.info("✔️ Executed CHECK STATUS SDID controller");
   };
 
-  //TODO : Token generator using JWT
-  public static generateToken = async (req: Request, res: Response) => {
+  //Token generator using JWT
+  public static generateToken = async (
+    req: Request,
+    res: Response,
+    next: Function
+  ) => {
     try {
       const token = await AppService.generateToken();
       res.status(200).json({
@@ -73,10 +88,7 @@ export class AppController {
       });
       logger.silly(`TOKEN: ${token}`);
     } catch (error) {
-      res.status(500).json({
-        message: "An error occurred",
-        error: (error as Error).message,
-      });
+      next(error); // Pass the error to the middleware
     } finally {
       logger.info("✔️ Executed GENERATE TOKEN controller");
     }
